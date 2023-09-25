@@ -47,6 +47,7 @@ parser.add_argument('--stop_random_cover', type=bool, default=False)
 
 parser.add_argument('--eval_lower_limit', type=float, default=0.0)
 parser.add_argument('--impersonation', type=str, default="A",help="choices of impersonation, either A, B or C. See documentation")
+parser.add_argument('--use_path',type=string, default='universal-sentence-encoder_4')
 
 
 args = parser.parse_args()
@@ -197,7 +198,7 @@ num_attack_failed = 0
 num_predict_failed = 0
 num_predict_succeed = 0
 
-use = USE(cuda_device)
+use = USE(cuda_device,use_path=args.use_path)
 # bs = BERTScore(cuda_device)
 def bs(s1, s2):
     return 0.4999

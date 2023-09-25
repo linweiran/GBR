@@ -42,11 +42,11 @@ parser.add_argument('--target_metric', type=str, default='bs')
 parser.add_argument('--stop_random_cover', type=bool, default=False)
 
 parser.add_argument('--eval_lower_limit', type=float, default=0.0)
-
+parser.add_argument('--use_path',type=string, default='universal-sentence-encoder_4')
 
 args = parser.parse_args()
 print("ARGS: ", args)
-
+use_path=args.use_path
 cuda_device, victim_device = args.cuda_device, args.victim_device
 import os
 if victim_device != -1:
@@ -181,7 +181,7 @@ num_attack_failed = 0
 num_predict_failed = 0
 num_predict_succeed = 0
 
-use = USE(cuda_device)
+use = USE(cuda_device,use_path=use_path)
 # bs = BERTScore(cuda_device)
 def bs(s1, s2):
     return 0.4999

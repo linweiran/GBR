@@ -12,9 +12,9 @@ import os
 
 #use_path = '/home/phantivia/universal-sentence-encoder_4'
 #use_path='063d866c06683311b44b4992fd46003be952409c'
-use_path='universal-sentence-encoder_4'
+#use_path='universal-sentence-encoder_4'
 class USE:
-    def __init__(self, cuda_device):
+    def __init__(self, cuda_device,use_path='universal-sentence-encoder_4'):
         gpus = tf.config.experimental.list_physical_devices('GPU')
         if gpus:
         # Restrict TensorFlow to only use the victim model's GPU
