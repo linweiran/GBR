@@ -4,7 +4,7 @@ We have listed all packages required in requirements.txt. You can do the followi
 ```
 pip3 install -r requirements.txt
 ```
-The download the USE-4 model from https://tfhub.dev/google/universal-sentence-encoder/4 
+Then download the USE-4 model from https://tfhub.dev/google/universal-sentence-encoder/4 
 
 ### Untargeted Attacks
 ```
