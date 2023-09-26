@@ -45,7 +45,7 @@ parser.add_argument('--stop_random_cover', type=bool, default=False)
 
 parser.add_argument('--eval_lower_limit', type=float, default=0.0)
 parser.add_argument('--target_class', type=int, default=4,help="target class, a integer in [0,4]")
-parser.add_argument('--use_path',type=string, default='universal-sentence-encoder_4')
+parser.add_argument('--use_path',type=str, default='universal-sentence-encoder_4')
 
 
 args = parser.parse_args()

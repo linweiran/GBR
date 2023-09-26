@@ -12,7 +12,8 @@ import numpy as np
 from os import path
 from csv import DictReader
 import pickle
-
+import argparse
+parser = argparse.ArgumentParser()
 # CONSTS
 IM_SIZE = 48              # images would be resized to IM_SIZExIM_SIZE
 N_CHANNELS = 3            # images are RGB
@@ -21,7 +22,13 @@ FRAC_VAL = 0.05           # fraction of training data to use for validation
 N_TRAIN = 39209           # number of training images (incl. validation)
 N_TEST = 12630            # number of test images
 SEED = 123                # seed for rand to make output consistent
-MAIN_DIR = 'data/GTSRB/'  # main GTSRB dir
+#MAIN_DIR = 'GTSRB/'  # main GTSRB dir
+parser.add_argument('--data_path',type=str, default='GTSRB')
+
+args = parser.parse_args()
+print("ARGS: ", args)
+MAIN_DIR=args.data_path
+
 
 def preprocess_im(im, im_sz):
     """

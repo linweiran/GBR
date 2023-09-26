@@ -42,7 +42,7 @@ parser.add_argument('--target_metric', type=str, default='bs')
 parser.add_argument('--stop_random_cover', type=bool, default=False)
 
 parser.add_argument('--eval_lower_limit', type=float, default=0.0)
-parser.add_argument('--use_path',type=string, default='universal-sentence-encoder_4')
+parser.add_argument('--use_path',type=str, default='universal-sentence-encoder_4')
 
 args = parser.parse_args()
 print("ARGS: ", args)
