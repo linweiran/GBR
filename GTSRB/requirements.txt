@@ -9,7 +9,6 @@ filelock==3.4.1
 geotorch==0.3.0
 huggingface-hub==0.4.0
 idna==2.6
-imageio==2.9.0
 importlib-metadata==4.8.3
 importlib-resources==5.4.0
 keyring==10.6.0
@@ -29,8 +28,7 @@ pytz==2022.7.1
 pyxdg==0.25
 PyYAML==6.0
 requests==2.27.1
-scikit-image==0.14.0
-scipy==1.2.1
+scipy==1.5.4
 SecretStorage==2.3.1
 six==1.11.0
 timm==0.6.12
