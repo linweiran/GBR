@@ -34,7 +34,9 @@ def test_hit(model, x,y_targets,batch_size,device='cpu'):
         select=torch.sum(sum(pred==j for j in y_targets).bool()).item()
         success+=select
     return success/total
-    #print ("accuracy: "+str(success/total))
+
+
+
 
 def pgd_attack(model, x,y, batch_size=1024,eps=8/255, alpha=2/255, iters=40,device='cpu',L_dist='L_inf') :
     loss = nn.CrossEntropyLoss()
@@ -91,7 +93,7 @@ def pgd_attack(model, x,y, batch_size=1024,eps=8/255, alpha=2/255, iters=40,devi
         adv[start_index:end_index]=adv_batch.cpu().numpy()
     return adv
 from basic_operations import test
-from autoattack.autoattack import AutoAttack
+#from autoattack.autoattack import AutoAttack
 def autopgd(model,X,Y,seed,eps=8./255,device='cuda',bs=512,norm='Linf',glass=None):
     model.eval()
     print (Y.shape)
@@ -136,14 +138,7 @@ class PGD():
         #wr loss
         x_target=torch.unsqueeze(x[np.arange(x.shape[0]), y_target],1).expand(-1,x.shape[1])
         return torch.sum(nn.functional.relu(x+1e-15-x_target),dim=1)
-        """
-        a=torch.arange(self.nclass)
-        b=np.arange(self.nclass)
-        y_nontargets=a[np.delete(b,y_targets.numpy())]
-        x_nontargets=torch.index_select(x,1,y_nontargets.to(self.device))
-        x_target=torch.unsqueeze(x[np.arange(x.shape[0]), y_target],1).expand(-1,x_nontargets.shape[1])
-        return torch.sum(nn.functional.relu(x_nontargets+1e-15-x_target),dim=1)
-        """
+
 
     def md_loss_max(self, x, y_targets):
         #wr loss max
@@ -231,7 +226,6 @@ class PGD():
             lo=self.md_loss_max
         if self.loss=='md_group':
             lo=self.md_loss_group
-        print  ('Auto-PGD, normal rounding')
         x = x_in.clone() if len(x_in.shape) == 4 else x_in.clone().unsqueeze(0)
         y = y_in.clone() if len(y_in.shape) == 1 else y_in.clone().unsqueeze(0)
         unit=torch.arange(x.size()[0]).to(self.device)
@@ -500,71 +494,26 @@ def APGD_caller(p,pairs,x_in, y_in,bs=512,auto=True):
         #print (succ)
         return succ
 
-def APGD_targeted(model,x,y,seed,num_classes,eps,norm,bs=512):
+def APGD_targeted(model,x,y,seed,num_classes,eps,norm,bs=512,device="cuda",n_iter=100,array_flag=False,target=None):
     #torch.random.manual_seed(0)
     #torch.cuda.random.manual_seed(0)
     model.eval()
     np.random.seed(0)
-    target_offset=np.floor(np.random.rand(x.shape[0])*(num_classes-1))+1
-    targets=(y+target_offset) % num_classes
+    if target is None:
+    	target_offset=np.floor(np.random.rand(x.shape[0])*(num_classes-1))+1
+    	targets=(y+target_offset) % num_classes
+    else:
+        targets=np.ones(x.shape[0])*target
     result=np.zeros(x.shape[0])
 
-    """
-    for i in range(num_classes):
-        select=np.where(targets==i)
-        apgd=PGD(model=model,nclass=num_classes,eps=eps,loss='md_single',norm=norm)
-        tmp=apgd.perturb( x[select], y[select],torch.tensor([i]),bs=512,auto=True)
-        result[select]=tmp
-        #print (np.mean(result))
-    """
-    apgd=PGD(model=model,nclass=num_classes,eps=eps,loss='md_single',norm=norm,rand_t=True)
-    result=apgd.perturb( x, y,targets,bs=bs,auto=True)
 
+    apgd=PGD(model=model,nclass=num_classes,eps=eps,loss='md_single',norm=norm,rand_t=True,device=device,n_iter=n_iter)
+    result=apgd.perturb( x, y,targets,bs=bs,auto=True)
+    if (array_flag):
+    	return result
     ret=np.mean(result)
-    print (ret)
     return ret
 
 
-"""
-model_names=['Wong2020Fast','Ding2020MMA']
-modelnumber=len(model_names)
 
-
-eps=8./255
-seednumber=1
-
-torch.random.manual_seed(0)
-torch.cuda.random.manual_seed(0)
-
-#animals to nonanimals
-y_targets=torch.tensor([0,1,8,9])
-select=torch.where(sum(y==i for i in [2,3,4,5,6,7]).bool())[0]
-x=x[select]
-y=y[select]
-
-
-record=np.zeros((seednumber,modelnumber,y_targets.shape[0],1000*(10-y_targets.shape[0])))
-for seed in range(seednumber):
-  for modelindex in range (modelnumber):
-    model = load_model(model_names[modelindex], norm='Linf')
-    if torch.cuda.is_available():
-        model.cuda()
-    model.eval()
-    attack=PGD(model=model,eps=8./255,alpha=1./255)
-
-    
-    attack.loss='md_group'
-    record[seed][modelindex]=attack.perturb(x,y,y_targets=y_targets)
-    with open('CIFAR10Case1-eps'+str(int(eps*255))+'-'+attack.loss,'wb') as f:
-        pickle.dump(record,f)
-    
-    #baseline
-    attack.loss='md_single'
-    c=0
-    for y_t in y_targets:
-        record[seed][modelindex][c]=attack.perturb(x,y,y_targets,y_t)
-        with open('CIFAR10Case2-eps'+str(int(eps*255))+'-'+attack.loss,'wb') as f:
-            pickle.dump(record,f)
-        c+=1
-"""
 
