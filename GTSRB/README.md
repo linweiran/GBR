@@ -1,10 +1,24 @@
 # Usage
 
-It's highly recommended to run our implmentation with GPUs. However, we designed a scale-down mini-experiment for NDSS artifact review (https://secartifacts.github.io/ndss2024/), which will be denoted as "(CPU only)" below
+It's highly recommended to run our implmentation with GPUs. However, we designed a scale-down mini-experiment for NDSS artifact review (https://secartifacts.github.io/ndss2024/), which will be denoted as "(without GPU)" below
 
-### Install Required Packages
+### Install Required Packages (with GPU)
 We have listed all packages required in requirements.txt. You can do the following:
 ```
 pip3 install -r requirements.txt
 ```
 
+### Install Required Packages (without GPU)
+We have listed all packages required in requirements.txt. You can do the following:
+```
+pip3 install -r requirements-cpu.txt
+```
+
+### Download datasets (with or without GPU)
+Please download the dataset from the downloads section of https://benchmark.ini.rub.de/gtsrb_dataset.html#Downloads where a link can be found. Specifically, please download files named "GTSRB_Final_Training_Images.zip", "GTSRB_Final_Test_Images.zip", and "GTSRB_Final_Test_GT.zip". After extracting these zip files, please move the directories named "Final_Test" and "Final_Training", along with the file "GT-final_test.csv" to the same directory.
+
+### Preprocess datasets (with or without GPU)
+You may run "python3 prepocess.py --data_path DATA_PATH" where "DATA_PATH" is the path to the directory where the extracted files are stored (mentioned above)
+
+### Run experiments (without GPU)
+You may run "python3 hello_world.py --data_path DATA_PATH" where "DATA_PATH" is the path to the directory where the extracted files are stored (mentioned above)
