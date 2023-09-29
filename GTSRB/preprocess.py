@@ -23,7 +23,7 @@ N_TRAIN = 39209           # number of training images (incl. validation)
 N_TEST = 12630            # number of test images
 SEED = 123                # seed for rand to make output consistent
 #MAIN_DIR = 'GTSRB/'  # main GTSRB dir
-parser.add_argument('--data_path',type=str, default='GTSRB')
+parser.add_argument('--data_path',type=str, default='/data/GTSRB')
 
 args = parser.parse_args()
 print("ARGS: ", args)

@@ -67,7 +67,7 @@ def test(model, x,y,batch_size,device='cpu'):
         #print (pred.cpu().numpy()[:20])
         #print (y_batch.cpu().numpy()[:20])
         success+=(pred==y_batch).sum().item()
-    print ("accuracy: "+str(success/total))
+    #print ("accuracy: "+str(success/total))
     #print ("loss: "+str(loss))
     return success/total
     #print ("accuracy: "+str(success/total))
