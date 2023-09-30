@@ -25,6 +25,7 @@ Our code is heavily based on the following implementations:
 - Autoattack (https://github.com/fra31/auto-attack)
 - robustness package (https://github.com/MadryLab/robustness)
 - T-PGD (https://github.com/Phantivia/T-PGD)
+- Defense against Occlusion Attacks (DOA) (https://github.com/tongwu2020/phattacks)
 
 We greatly appreciate authors of the above for their fantastic and innovative work.
 
