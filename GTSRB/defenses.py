@@ -67,7 +67,7 @@ def md_loss_group(x, y_targets,nclass,device):
 
 
 def md_group_train(x, y_targets,nclass,device):
-    train loss
+    #train loss
     a=torch.arange(nclass)
     b=np.arange(nclass)
     y_nontargets=a[np.delete(b,y_targets.numpy())]

@@ -8,7 +8,17 @@ import torch.optim as optim
 from load_dataset import load_gtsrb
 import pickle
 
-(x_train, y_train), (x_test, y_test), (x_val, y_val)=load_gtsrb()
+import argparse
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--data_path',type=str, default='/data/GTSRB')
+
+args = parser.parse_args()
+print("ARGS: ", args)
+MAIN_DIR=args.data_path
+
+(x_train, y_train), (x_test, y_test), (x_val, y_val)=load_gtsrb(data_path=MAIN_DIR)
+print ("data loaded sucessfullly!")
 
 
 x_train=np.swapaxes(x_train, 1, 3)
