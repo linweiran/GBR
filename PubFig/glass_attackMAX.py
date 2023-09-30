@@ -46,17 +46,7 @@ def md_loss_max( x, y_targets):
     x_target_max=torch.unsqueeze(torch.max(x_targets,1)[0],1).expand(-1,x_nontargets.shape[1])
     return torch.sum(nn.functional.relu(x_nontargets+1e-15-x_target_max),dim=1)
 
-def md_loss_group( x, y_targets):
 
-    a=torch.arange(60)
-    b=np.arange(60)
-    y_nontargets=a[np.delete(b,y_targets.cpu().numpy())]
-    x_nontargets=torch.index_select(x,1,y_nontargets.to('cuda'))
-    ret=torch.ones(x.shape[0]).to('cuda')
-    for y_target in y_targets:
-        x_target=torch.unsqueeze(x[np.arange(x.shape[0]), y_target],1).expand(-1,x_nontargets.shape[1])
-        ret*=torch.sum(nn.functional.relu(x_nontargets+1e-15-x_target),dim=1)
-    return ret
 
 
 def choose_color(model,X,t,glass,mean):
@@ -225,8 +215,8 @@ if __name__ == "__main__":
                 c+=1
                 print (ts/c)
             dic[(i,60-k)]=record
-            #with open('4MAX','wb') as f:
-            #    pickle.dump(dic,f)
+            with open('4MAX','wb') as f:
+                pickle.dump(dic,f)
         
         
         

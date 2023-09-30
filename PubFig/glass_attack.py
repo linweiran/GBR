@@ -151,10 +151,7 @@ if __name__ == "__main__":
                     check_num += (predicted == labels)
             correct += (correct_num == check_num).sum().item()
 
-            # if predicted.data != labels.data:
-            #     save_image('glass_uattack'+str(labels.data)+'_'+str(total),images.data)
-            #     save_image('glass_attack'+str(predicted.data)+'_'+str(total),Xadv.data)
-            # uncomment to see some images
+
             
             print("one batch is over, batch size", labels.size(0), "correct predict is " ,(correct_num == check_num).sum().item())
 

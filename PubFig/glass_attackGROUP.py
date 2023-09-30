@@ -47,15 +47,6 @@ def md_loss_max( x, y_targets):
     return torch.sum(nn.functional.relu(x_nontargets+1e-15-x_target_max),dim=1)
 
 def md_loss_group( x, y_targets):
-    n=y_targets.shape[0]
-    if (n==50):
-        k=10
-    if (n==40):
-        k=7
-    if (n==30):
-        k=5
-    if (n<=20):
-        k=2
     a=torch.arange(60)
     b=np.arange(60)
     y_nontargets=a[np.delete(b,y_targets.cpu().numpy())]
@@ -63,7 +54,6 @@ def md_loss_group( x, y_targets):
     ret=torch.ones(x.shape[0]).to('cuda')
     for y_target in y_targets:
         x_target=torch.unsqueeze(x[np.arange(x.shape[0]), y_target],1).expand(-1,x_nontargets.shape[1])
-        #ret*=torch.sum(nn.functional.relu(x_nontargets+1e-15-x_target),dim=1)/7
         ret+=torch.log(torch.sum(nn.functional.relu(x_nontargets+1e-15-x_target),dim=1))
     return ret
 

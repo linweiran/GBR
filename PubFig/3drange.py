@@ -37,11 +37,11 @@ for k in range(10,60,10):
             with open(Mname,'rb') as f:
                 data=pickle.load(f)
                 mlist[j]=np.mean(data[(k,i)])
-        #group[(k,i)]=( glist.mean(), glist.max(), glist.min())
-        #best[(k,i)]=( blist.mean(), blist.max(),blist.min())
-        #average[(k,i)]=( alist.mean(), alist.max(),alist.min())
-        #worst[(k,i)]= ( wlist.mean(), wlist.max(),wlist.min())
-        #maxs[(k,i)]= ( mlist.mean(), mlist.max(),mlist.min())
+        group[(k,i)]=( glist.mean(), glist.max(), glist.min())
+        best[(k,i)]=( blist.mean(), blist.max(),blist.min())
+        average[(k,i)]=( alist.mean(), alist.max(),alist.min())
+        worst[(k,i)]= ( wlist.mean(), wlist.max(),wlist.min())
+        maxs[(k,i)]= ( mlist.mean(), mlist.max(),mlist.min())
 
         maxl+=mlist.tolist()
         groupl+=glist.tolist()
@@ -56,8 +56,8 @@ print ((np.array(groupl)/np.array(averagel)).min(),(np.array(groupl)/np.array(av
 
 
 
-#with open('3drangeface','wb') as f:
-#    pickle.dump((group,best,average,worst,maxs),f)
+with open('3drangeface','wb') as f:
+    pickle.dump((group,best,average,worst,maxs),f)
 
 
 
