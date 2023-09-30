@@ -4,4 +4,6 @@ We have listed all packages required in requirements.txt. You can do the followi
 ```
 pip3 install -r requirements.txt
 ```
+### Download datasets
+Download dataset from https://www.cs.columbia.edu/CAVE/databases/pubfig/
 
