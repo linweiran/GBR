@@ -63,37 +63,18 @@ def pgd_attack(model, x,y, batch_size=1024,eps=8/255, alpha=2/255, iters=40,devi
                     adv_batch = adv_batch + alpha*grads.sign()
                     eta = torch.clamp(adv_batch - x_batch, min=-eps, max=eps)
                     adv_batch = torch.clamp(x_batch + eta, min=0, max=1).detach().clone()
-                    #adv_batch = torch.clamp(x_batch + eta, min=0, max=255).detach().clone()
                 elif L_dist=='L_2':
                     st=time.time() 
                     x_adv_1 = adv_batch + alpha * grads / ((grads ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-15)
-                    #print (time.time()-st)
                     adv_batch = torch.clamp(x_batch + (x_adv_1 - x_batch) / (((x_adv_1 - x_batch) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-15) * torch.min(
                         eps * torch.ones(x_batch.shape).to(device).detach(), ((x_adv_1 - x_batch) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt()), 0.0, 1.0)
-                    #print (time.time()-st)
-                    """
-                    #delta= alpha * grads /( torch.norm(grads.reshape(x_batch.shape[0], -1), p=2, dim=1) + 1e-15).reshape(-1, 1, 1, 1)
-                    delta=alpha*grads/((grads ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-15)
-                    print (time.time()-st)
-                    #delta_norm=torch.norm(delta.reshape(x_batch.shape[0], -1), p=2, dim=1)
-                    delta_norm=((delta ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-15)
-                    print (time.time()-st)
-                    factor=eps/delta_norm
-                    print (time.time()-st)
-                    factor = torch.min(factor, torch.ones_like(delta_norm))
-                    print (time.time()-st)
-                    delta = delta * factor.reshape(-1, 1, 1, 1)
-                    print (time.time()-st)
-                    adv_batch = torch.clamp(x_batch+delta,min=0, max=1)
-                    print (time.time()-st)
-                    """
                 else:
                     raise NotImplementedError
         
         adv[start_index:end_index]=adv_batch.cpu().numpy()
     return adv
 from basic_operations import test
-#from autoattack.autoattack import AutoAttack
+from autoattack.autoattack import AutoAttack
 def autopgd(model,X,Y,seed,eps=8./255,device='cuda',bs=512,norm='Linf',glass=None):
     model.eval()
     print (Y.shape)
@@ -135,13 +116,13 @@ class PGD():
         return -(x[u, y] - x_sorted[:, -2] * ind - x_sorted[:, -1] * (1. - ind)) / (x_sorted[:, -1] - x_sorted[:, -3] + 1e-12)
 
     def md_loss_single(self, x, y_target):
-        #wr loss
+        #md loss
         x_target=torch.unsqueeze(x[np.arange(x.shape[0]), y_target],1).expand(-1,x.shape[1])
         return torch.sum(nn.functional.relu(x+1e-15-x_target),dim=1)
 
 
     def md_loss_max(self, x, y_targets):
-        #wr loss max
+        #mdmax loss
         a=torch.arange(self.nclass)
         b=np.arange(self.nclass)
         y_nontargets=a[np.delete(b,y_targets.numpy())]
@@ -151,7 +132,7 @@ class PGD():
         return torch.sum(nn.functional.relu(x_nontargets+1e-15-x_target_max),dim=1)
 
     def md_loss_group(self, x, y_targets):
-        #wr loss group
+        #mdmul loss
         a=torch.arange(self.nclass)
         b=np.arange(self.nclass)
         y_nontargets=a[np.delete(b,y_targets.numpy())]
@@ -159,7 +140,6 @@ class PGD():
         ret=torch.ones(x.shape[0]).to(self.device)
         for y_target in y_targets:
             x_target=torch.unsqueeze(x[np.arange(x.shape[0]), y_target],1).expand(-1,x_nontargets.shape[1])
-            #ret*=torch.sum(nn.functional.relu(x_nontargets+1e-15-x_target),dim=1)
             ret+=torch.log(torch.sum(nn.functional.relu(x_nontargets+1e-15-x_target),dim=1))
         return ret
 
@@ -180,15 +160,11 @@ class PGD():
         if self.loss=='md_group':
             lo=self.md_loss_group
 
-        #loss_steps = torch.zeros([self.n_iter, x.shape[0]])
-        #loss_best_steps = torch.zeros([self.n_iter + 1, x.shape[0]])
-        #acc_steps = torch.zeros_like(loss_best_steps)
 
         x = x_in.clone() if len(x_in.shape) == 4 else x_in.clone().unsqueeze(0)
         y = y_in.clone() if len(y_in.shape) == 1 else y_in.clone().unsqueeze(0)
         
         ret=x.clone().detach()
-        #ret=torch.ones(x.shape[0])*(self.n_iter+1)
         if self.norm == 'Linf':
             t = 2 * torch.rand(x.shape).to(self.device).detach() - 1
             x_adv = x.detach() + self.eps * torch.ones([x.shape[0], 1, 1, 1]).to(self.device).detach() * t / (t.reshape([t.shape[0], -1]).abs().max(dim=1, keepdim=True)[0].reshape([-1, 1, 1, 1]))
@@ -213,8 +189,6 @@ class PGD():
                 pred = torch.argmax(logits, dim=1)
                 select=torch.where(sum(pred==j for j in y_targets).bool())[0]
                 ret[select]=x_adv[select].clone().detach()
-                #ret[select]=torch.minimum(ret[select],i*torch.ones(x.shape[0])[select])
-                #print (i,select.size())
         return ret
 
     def attack_single_run_auto(self, x_in, y_in,y_targets,y_t=None):
@@ -247,12 +221,7 @@ class PGD():
         output = self.model(x)
         x_adv.requires_grad_()
         grad = torch.zeros_like(x)
-        """
-        record_pert=np.zeros((100,x.shape[0],x.shape[1],x.shape[2],x.shape[3]))
-        images=x.cpu().numpy()
-        record_pred=np.zeros((100,x.shape[0]))
-        """
-        #losses=np.zeros((100,x.shape[0]))
+
         for _ in range(self.eot_iter):
             with torch.enable_grad():
                 logits = self.model(x_adv) 
@@ -286,15 +255,6 @@ class PGD():
                     x_adv_1 = torch.clamp(torch.min(torch.max(x_adv_1, x - self.eps), x + self.eps), 0.0, 1.0)
                     x_adv_1 = torch.clamp(torch.min(torch.max(x_adv + (x_adv_1 - x_adv)*a + grad2*(1 - a), x - self.eps), x + self.eps), 0.0, 1.0)
                 elif self.norm == 'L2':
-                    #print (((grad ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12).detach().cpu().numpy())
-                    """
-                    x_adv_1 = x_adv + step_size[0] * grad / ((grad ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12)
-                    x_adv_1 = torch.clamp(x + (x_adv_1 - x) / (((x_adv_1 - x) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12) * torch.min(
-                        self.eps * torch.ones(x.shape).to(self.device).detach(), ((x_adv_1 - x) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt()), 0.0, 1.0)
-                    x_adv_1 = x_adv + (x_adv_1 - x_adv)*a + grad2*(1 - a)
-                    x_adv_1 = torch.clamp(x + (x_adv_1 - x) / (((x_adv_1 - x) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12) * torch.min(
-                        self.eps * torch.ones(x.shape).to(self.device).detach(), ((x_adv_1 - x) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12), 0.0, 1.0)
-                    """
                     x_adv_1 = x_adv - step_size[0] * grad / ((grad ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12)
                     x_adv_1 = torch.clamp(x + (x_adv_1 - x) / (((x_adv_1 - x) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt() + 1e-12) * torch.min(
                         self.eps * torch.ones(x.shape).to(self.device).detach(), ((x_adv_1 - x) ** 2).sum(dim=(1, 2, 3), keepdim=True).sqrt()), 0.0, 1.0)
@@ -316,7 +276,6 @@ class PGD():
                     else:
                         loss_indiv = lo(logits,y_targets)
                     loss = loss_indiv.sum()
-                    #losses[i]=loss_indiv.detach().cpu().numpy()
                 grad += torch.autograd.grad(loss, [x_adv])[0].detach() # 1 backward pass (eot_iter = 1)
             grad /= float(self.eot_iter)
             if self.verbose:
@@ -351,14 +310,9 @@ class PGD():
             pert_sign=pert.sign()
             pert_magnitude=pert.abs()
             pert=pert_sign*torch.floor(pert_magnitude*255)/255.
-            #print (self.model(x+pert).max(1)[1].cpu().numpy())
-            #pert=pert_sign*pert_magnitude
-            #record_pert[i]=pert.detach().cpu().numpy()
+
             x_test=torch.clamp(x+pert,0,1)
             pred=self.model(x_test).max(1)[1]
-            #record_pred[i]=pred.detach().cpu().numpy()
-            #print (self.model(x_test)[0].detach().cpu().numpy())
-            #print(pred.cpu().numpy())
             if self.rand_t:
                 select=(pred==y_t)
             else:
@@ -366,23 +320,16 @@ class PGD():
             unchangable=torch.masked_select(unit,select)
             x_best_adv[unchangable]=x_test[unchangable]
             
-            #x_best_adv=torch.round(x_best_adv*255)/255.
-            #x_best_adv=torch.clamp(x_best_adv,0,1)
-            #print ((self.model(x_best_adv).max(1)[1] != y_target).sum().item())
+
         x_best_adv = torch.clamp(torch.min(torch.max(x_best_adv, x - self.eps), x + self.eps), 0.0, 1.0)
         x_best_adv=torch.round(x_best_adv*255)/255.
-        #with open('record','wb') as f:
-            #pickle.dump((images,record_pred,record_pert),f)
-        #with open('losses','wb') as f:
-            #pickle.dump(losses,f)
+
         return x_best_adv,x_adv#, acc, loss_best, x_best_adv
 
     def perturb(self, x_in, y_in,y_targets,bs=512,auto=True):
         assert self.norm in ['Linf', 'L2']
         self.model.eval()
         self.model.to(self.device)
-        #x = x_in.clone() if len(x_in.shape) == 4 else x_in.clone().unsqueeze(0)
-        #y = y_in.clone() if len(y_in.shape) == 1 else y_in.clone().unsqueeze(0)
         x=torch.tensor(x_in).float().to(self.device)
         y=torch.tensor(y_in).long().to(self.device)
 
@@ -411,7 +358,6 @@ class PGD():
                     ret[start_idx:end_idx]=pred.cpu().numpy()
             else:
                 n_batches = int(np.ceil(x.shape[0] / bs))
-                #adv_test=x.clone().detach()
                 ret=np.zeros((y_targets.shape[0],x.shape[0]))
                 c=0
                 for y_t in y_targets:
@@ -419,7 +365,7 @@ class PGD():
                         start_idx = batch_idx * bs
                         end_idx = min( (batch_idx + 1) * bs, x.shape[0])
                         x_to_fool, y_to_fool = x[start_idx:end_idx, :].clone().to(self.device), y[start_idx:end_idx].clone().to(self.device)
-                        #adv_test[start_idx:end_idx] = self.attack_single_run(x_to_fool, y_to_fool,y_targets=y_targets,y_t=y_t)
+
                         if auto:
                             adv_samples,tmp=self.attack_single_run_auto(x_to_fool, y_to_fool,y_targets=y_targets,y_t=y_t)
                         else:
@@ -430,8 +376,7 @@ class PGD():
                     
                         select=sum(pred==j for j in y_targets).bool().cpu().numpy()
                         ret[c][start_idx:end_idx]=select
-                        #with open('record','wb') as f:
-                        #    pickle.dump(adv_samples.detach().cpu().numpy(),f)
+
                     c+=1
         else:
             n_batches = int(np.ceil(x.shape[0] / bs))
@@ -488,15 +433,12 @@ def APGD_caller(p,pairs,x_in, y_in,bs=512,auto=True):
                 num+=n_samples
                 succ/=num
     if p.loss=='md_single':
-        #print (succ,best,worst)
         return succ,best,worst
     else:
-        #print (succ)
         return succ
 
 def APGD_targeted(model,x,y,seed,num_classes,eps,norm,bs=512,device="cuda",n_iter=100,array_flag=False,target=None):
-    #torch.random.manual_seed(0)
-    #torch.cuda.random.manual_seed(0)
+
     model.eval()
     np.random.seed(0)
     if target is None:
