@@ -36,13 +36,14 @@ python3 3drange.py
 
 ### Experiments for attack strategies
 You may run 
-"""
+```
+python3 matrix.py
 python3 batch_sampling.py
 python3 time.py
-"""
+```
 
 ### Experiments for defenses
 You may run 
-"""
+```
 CUDA_VISIBLE_DEVICES=0 python3 defense_train.py
-"""
+```
