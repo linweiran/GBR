@@ -46,7 +46,6 @@ for i in range(10,60,10):
             counts=np.sum(np.sum(look,axis=1)>0)
             
             for k in range(2,11):
-                #if counts>=k:
                 if (counts>=k) and (np.sum(np.sum(look[60-j-5:],axis=1)>0)>0):#the last five are managers
                     used[k].append(selected)
         for k in range(2,11):

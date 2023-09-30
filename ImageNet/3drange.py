@@ -14,14 +14,11 @@ for k in range(10,60,10):
         blist=np.zeros(5)
 
         for j in range(5):
-            if j==0:
-                st=""
-            else:
-                st=str(j)
-            Gname="GROUP"+st+"L2-log"
-            Mname="MAX"+st+"L2"
+            st=str(j)
+            Gname="GROUP"+distance
+            Mname="MAX"+st+distance
 
-            gu="guess"+st+"L2"
+            gu="guess"+st+distance
             with open(gu,'rb') as f:
                 data=pickle.load(f)
                 (alist[j],wlist[j],blist[j])=data[(k,i)]

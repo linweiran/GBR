@@ -3,7 +3,16 @@ np.random.seed(0)
 a=np.random.choice(1000,60,replace=False).tolist()
 print (a)
 from robustness.datasets import ImageNet
-ds=ImageNet('../ILSVRC')
+import argparse
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--data_path',type=str, default='/data/ILSVRC')
+
+args = parser.parse_args()
+print("ARGS: ", args)
+MAIN_DIR=args.data_path
+
+ds=ImageNet(MAIN_DIR)
 _, test_loader = ds.make_loaders(workers=0, batch_size=50,only_val=True)
 x=[]
 y=[]

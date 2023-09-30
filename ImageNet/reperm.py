@@ -20,6 +20,9 @@ p4=np.random.permutation(60).astype(int)
 
 print (p1)
 print (a[p1])
+with open("A0",'wb') as f:
+    pickle.dump(a.tolist(),f)
+
 with open("A1",'wb') as f:
     pickle.dump(a[p1].tolist(),f)
 with open("A2",'wb') as f:

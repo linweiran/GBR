@@ -46,8 +46,7 @@ for i in range(2000):
 
         total_valid[j][np.where(a==y_valid[i])[0][0]]+=1
         matrix_valid[j][np.where(a==y_valid[i])[0][0]]+=succ_valid[j][i]
-#matrix_test/=total_test
-#matrix_valid/=total_valid
+
 for i in range(60):
     matrix_test[i][i]=0
     matrix_valid[i][i]=0

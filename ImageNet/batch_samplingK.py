@@ -49,8 +49,6 @@ for i in range(10,60,10):
             
             for k in range(2,11):
                 if k_search(look,k):
-                #if counts>=k:
-                #if (counts>=k) and (np.sum(np.sum(look[60-j-5:],axis=1)>0)>0):#the last five are managers
                     used[k].append(selected)
         for k in range(2,11):
             chance[(i,j,k)]=len(used[k])/100000
