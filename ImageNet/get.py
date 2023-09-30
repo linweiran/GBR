@@ -9,14 +9,27 @@ torch.random.manual_seed(0)
 torch.manual_seed(0)
 np.random.seed(0)
 
+import argparse
+parser = argparse.ArgumentParser()
+
+
+parser.add_argument('--distance',type=str, default='l2')
+parser.add_argument('--permutation',type=int, default=0)
+
+args = parser.parse_args()
+print("ARGS: ", args)
+distance=args.distance
+permutation=args.permutation
+if distance != "l2":
+        distance="linf"
+
+with open("A"+str(permutation),'rb') as f:
+    a=pickle.load(f)
+print (a)
+
 with open("A",'rb') as f:
     aa=pickle.load(f)
 print (aa)
-
-
-with open("A",'rb') as f:
-    a=pickle.load(f)
-print (a)
 
 
 indices=list()
@@ -28,12 +41,9 @@ print (indices)
 with open("Y",'rb') as f:
     y=pickle.load(f)
 
-with open("l2",'rb') as f:
-    l2=pickle.load(f)
-with open("linf",'rb') as f:
-    linf=pickle.load(f)
+with open(distance,'rb') as f:
+    data=pickle.load(f)
 
-data=linf
 
 record={}
 for i in range(10,60,10):
@@ -48,6 +58,6 @@ for i in range(10,60,10):
         print (np.mean(np.sum(look,axis=0)==60-j))
         print (np.mean(np.sum(look,axis=0)>0))
         record[(i,60-j)]=(np.mean(look),np.mean(np.sum(look,axis=0)==60-j),np.mean(np.sum(look,axis=0)>0))
-with open('guessLinf','wb') as f:
+with open('guess'+distance,'wb') as f:
     pickle.dump(record,f)
-print (record)
+

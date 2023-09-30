@@ -5,6 +5,17 @@ best={}
 average={}
 worst={}
 maxs={}
+import argparse
+parser = argparse.ArgumentParser()
+
+
+parser.add_argument('--distance',type=str, default='l2')
+
+args = parser.parse_args()
+print("ARGS: ", args)
+distance=args.distance
+
+
 for k in range(10,60,10):
     for i in range(10,70-k,10):
         glist=np.zeros(5)
@@ -15,7 +26,7 @@ for k in range(10,60,10):
 
         for j in range(5):
             st=str(j)
-            Gname="GROUP"+distance
+            Gname="GROUP"+st+distance
             Mname="MAX"+st+distance
 
             gu="guess"+st+distance
@@ -34,7 +45,7 @@ for k in range(10,60,10):
         worst[(k,i)]= ( wlist.mean(), wlist.max(),wlist.min())
         maxs[(k,i)]= ( mlist.mean(), mlist.max(),mlist.min())
 
-with open('3drangeL2','wb') as f:
+with open('3drange'+distance,'wb') as f:
     pickle.dump((group,best,average,worst,maxs),f)
 
 

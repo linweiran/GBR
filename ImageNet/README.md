@@ -35,19 +35,26 @@ CUDA_VISIBLE_DEVICES=0 python3 check.py --data_path DATA_PATH --distance DISTANC
 ```
 where DISTANCE is either "linf" or "l2".
 The result will be stored as a "dictionary" where we can look up whether it is achievable to perturb any instance as any class.
-
+To summarize the "dictionary" with respect to specific impersonation goals, run 
+```
+python3 get.py --distance DISTANCE --permutation PERMUTATION
+```
+where PERMUTATION is an integer in [0,4].
 ### Run new loss function
 You may do 
 ```
 CUDA_VISIBLE_DEVICES=0 python3 check_GROUP.py --data_path DATA_PATH --distance DISTANCE --permutation PERMUTATION
 ```
-for attacks with the MDMUL loss. PERMUTATION is an integer in [0,4]. 
+for attacks with the MDMUL loss.  
 Similarly, you may do
 ```
 CUDA_VISIBLE_DEVICES=0 python3 check_MAX.py --data_path DATA_PATH --distance DISTANCE --permutation PERMUTATION
 ```
 for attacks with the MDMAX loss.
-To extract information 
+To reproduce the information we used to make plots, you may do
+```
+python3 3drange.py --distance DISTANCE
+```
 
 
 
