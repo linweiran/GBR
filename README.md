@@ -27,3 +27,6 @@ Our code is heavily based on the following implementations:
 - T-PGD (https://github.com/Phantivia/T-PGD)
 
 We greatly appreciate authors of the above for their fantastic and innovative work.
+
+We also reused some of the code from our previous CGD attack implementation: (https://github.com/linweiran/CGD),
+which you are very welcome to check out!
