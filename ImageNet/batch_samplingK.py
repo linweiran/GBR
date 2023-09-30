@@ -9,13 +9,26 @@ torch.random.manual_seed(0)
 torch.manual_seed(0)
 np.random.seed(0)
 
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--distance',type=str, default='l2')
+
+
+args = parser.parse_args()
+print("ARGS: ", args)
+
+distance=args.distance
+if distance != "l2":
+        distance="linf"
+
 with open("A",'rb') as f:
     a=pickle.load(f)
 print (a)
 with open("Y",'rb') as f:
     y=pickle.load(f)
 
-with open("linf",'rb') as f:
+with open(distance,'rb') as f:
     data=pickle.load(f)
 
 
@@ -57,8 +70,8 @@ for i in range(10,60,10):
                 touse=touse[:1000]
                 record[(i,j,k)]=touse
             
-with open('chanceslinfK','wb') as f:
+with open('chances'+distance+'K','wb') as f:
     pickle.dump(chance,f)
-with open('indiceslinfK','wb') as f:
+with open('indices'+distance+'K','wb') as f:
     pickle.dump(record,f)
 

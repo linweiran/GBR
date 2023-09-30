@@ -7,7 +7,17 @@ torch.cuda.random.manual_seed(0)
 torch.random.manual_seed(0)
 torch.manual_seed(0)
 np.random.seed(0)
+import argparse
+parser = argparse.ArgumentParser()
 
+parser.add_argument('--distance',type=str, default='l2')
+
+
+args = parser.parse_args()
+print("ARGS: ", args)
+distance=args.distance
+if distance != "l2":
+        distance="linf"
 with open("A",'rb') as f:
     a=pickle.load(f)
 a=np.array(a)
@@ -16,17 +26,15 @@ with open("Y",'rb') as f:
 with open("X",'rb') as f:
     x=pickle.load(f)
 
-with open("l2",'rb') as f:
-    l2=pickle.load(f)
-with open("linf",'rb') as f:
-    linf=pickle.load(f)
+with open(distance,'rb') as f:
+    succ=pickle.load(f)
+
 
 print (y.shape)
 print (a.shape)
 
 y_test=y[:1000]
 y_valid=y[1000:]
-succ=l2
 succ_test=succ[:,:1000]
 succ_valid=succ[:,1000:]
 
@@ -59,7 +67,7 @@ print (np.sum(matrix_test))
 matrix_test/=total_test
 matrix_valid/=total_valid
 
-with open('matrixl2_test','wb') as f:
+with open('matrix'+distance+'_test','wb') as f:
     pickle.dump(matrix_test,f)
-with open('matrixl2_valid','wb') as f:
+with open('matrix'+distance+'_valid','wb') as f:
     pickle.dump(matrix_valid,f)

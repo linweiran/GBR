@@ -7,7 +7,18 @@ torch.cuda.random.manual_seed(0)
 torch.random.manual_seed(0)
 torch.manual_seed(0)
 np.random.seed(0)
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--method',type=str, default='baseline')
+parser.add_argument('--distance',type=str, default='l2')
 
+
+args = parser.parse_args()
+print("ARGS: ", args)
+method=args.method
+distance=args.distance
+if distance != "l2":
+        distance="linf"
 
 
 with open("A",'rb') as f:
@@ -15,8 +26,7 @@ with open("A",'rb') as f:
 print (a)
 with open("Y",'rb') as f:
     y=pickle.load(f)[:1000]
-distance="linf"
-#distance="l2"
+
 if distance=="linf":
     with open("linf",'rb') as f:
         REF=pickle.load(f)[:1000]
@@ -41,12 +51,7 @@ else:
         ORDERprev=pickle.load(f)
     with open("after-l2",'rb') as f:
         ORDERafter=pickle.load(f)
-#method="baseline"
-#method="matrix"
-#method="prev"
-#method="after"
-#method="matrix-prev"
-method="matrix-after"
+
 
 record={}
 for tag in indices:
