@@ -7,12 +7,15 @@ We have listed all packages required in requirements.txt. You can do the followi
 ```
 pip3 install -r requirements.txt
 ```
+We highly encourage the use of virtual environments as these packages may conflict with your existing ones.
 
 ### Install Required Packages (without GPU)
 We have listed all packages required in requirements.txt. You can do the following:
 ```
 pip3 install -r requirements-cpu.txt
 ```
+We highly encourage the use of virtual environments as these packages may conflict with your existing ones.
+
 
 ### Download datasets (with or without GPU)
 Please download the dataset from the downloads section of https://benchmark.ini.rub.de/gtsrb_dataset.html#Downloads where a link can be found. Specifically, please download files named "GTSRB_Final_Training_Images.zip", "GTSRB_Final_Test_Images.zip", and "GTSRB_Final_Test_GT.zip". After extracting these zip files, please move the directories named "Final_Test" and "Final_Training", along with the file "GT-final_test.csv" to the same directory.
@@ -20,7 +23,7 @@ Please download the dataset from the downloads section of https://benchmark.ini.
 ### Preprocess datasets (with or without GPU)
 You may run 
 ```
-python3 prepocess.py --data_path DATA_PATH
+python3 preprocess.py --data_path DATA_PATH
 ```
  where "DATA_PATH" is the path to the directory where the extracted files are stored (mentioned above)
 
