@@ -8,7 +8,7 @@ We propose the following to better evaluate the threat in realistic attack scena
 4. A defense approach that mitigates the threat
 
 # Usage
-You may find the instructions to reproduce our results in each directory corresponding to each dataset. GPUs are highly recommended for all experiments.
+You may find the instructions to reproduce our results in each directory corresponding to each dataset. GPUs are highly recommended for all experiments. We also highly recommend the use of virtual environments for all experiments.
 
 ## Citation
 ```
