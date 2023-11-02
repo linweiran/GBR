@@ -28,7 +28,7 @@ torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
 
 
-from architecture.basic_net import GTSRBNet2,GTSRBNet3,GTSRBNet4,GTSRBNet6,GTSRBNet7
+from basic_net import GTSRBNet2,GTSRBNet3,GTSRBNet4,GTSRBNet6,GTSRBNet7
 from basic_operations import train,test
 from attacks import pgd_attack,autopgd, APGD_caller,PGD,APGD_targeted
 from defenses import FreeAdvTrain,NormalTrain
@@ -39,11 +39,13 @@ from defenses import FreeAdvTrain,NormalTrain
 
 origins=[0,1,2,3,4,5,6,7,8]
 pairs=[(0,14),(0,15),(0,17),(1,14),(1,15),(1,17),(2,0),(2,14),(2,15),(2,17),(3,0),(3,1),(3,14),(3,15),(3,17),(4,0),(4,1),(4,14),(4,15),(4,17),(5,0),(5,1),(5,14),(5,15),(5,17),(6,0),(6,1),(6,14),(6,15),(6,17),(7,0),(7,1),(7,2),(7,14),(7,15),(7,17),(8,0),(8,1),(8,2),(8,3),(8,14),(8,15),(8,17)]
+targets=[0,1,2,3,14,15,17]
 
 accl=list()
 robustnesslAPGD=list()
 robustnesslAPGDT=list()
 acclS=list()
+acclT=list()
 robustnesslAPGDS=list()
 robustnesslAPGDSt_best=list()
 robustnesslAPGDSt_worst=list()
@@ -68,8 +70,8 @@ for random_seed in range(100):
     nclass=43
     norm='Linf'
     #norm='L2'
-    model=FreeAdvTrain(ADVnetwork,ADVoptimizer, x_train, y_train,x_test,y_test,512,max_iters=100,eps=0.5,m=8,device='cuda',dataset='GTSRB',L_dist='L_2',nclass=43,x_val=x_val,y_val=y_val,origins=origins,pairs=pairs)
-    #model=FreeAdvTrain(ADVnetwork,ADVoptimizer, x_train, y_train,x_test,y_test,batch_size,max_iters=100,eps=eps,m=8,device=device,dataset='GTSRB',nclass=nclass,x_val=x_val,y_val=y_val,origins=origins,pairs=pairs)
+    #model=FreeAdvTrain(ADVnetwork,ADVoptimizer, x_train, y_train,x_test,y_test,512,max_iters=100,eps=0.5,m=8,device='cuda',dataset='GTSRB',L_dist='L_2',nclass=43,x_val=x_val,y_val=y_val,origins=origins,pairs=pairs)
+    model=FreeAdvTrain(ADVnetwork,ADVoptimizer, x_train, y_train,x_test,y_test,batch_size,max_iters=100,eps=eps,m=8,device=device,dataset='GTSRB',nclass=nclass,x_val=x_val,y_val=y_val,origins=origins,pairs=pairs)
     
     
 
@@ -93,25 +95,25 @@ for random_seed in range(100):
     robustnesslAPGDSt_average.append(1-succ)
     robustnesslAPGDSt_best.append(1-best)
     robustnesslAPGDSt_worst.append(1-worst)    
+    test_select=np.isin(y_test,targets)
+    x_t, y_t=x_test[test_select], y_test[test_select]
+    acclT.append(test(model,x_t,y_t,batch_size,device='cuda'))
      
 
     performance={}
-    with open('models/GTSRB-performance3-L_inf-indivlg','wb') as f:       
-            performance['acc']=accl
-            performance['robustnessAPGDT']=robustnesslAPGDT
-            performance['robustnessAPGD']=robustnesslAPGD
-            performance['accS']=acclS
-            performance['robustnessAPGDS']=robustnesslAPGDS
-            performance['robustnessAPGDSt_max']=robustnesslAPGDSt_max
-            performance['robustnessAPGDSt_group']=robustnesslAPGDSt_group
-            performance['robustnessAPGDSt_average']=robustnesslAPGDSt_average
-            performance['robustnessAPGDSt_best']=robustnesslAPGDSt_best
-            performance['robustnessAPGDSt_worst']=robustnesslAPGDSt_worst
+    with open('GTSRB-performance3-L_inf-indivlg','wb') as f:       
+            performance['Average accuracy']=accl
+            performance['Accuracy on targeted classes']=acclT
+            performance['Targeted Robustness, assessed by Auto-PGD']=robustnesslAPGDT
+            performance['Untargeted Robustness, assessed by Auto-PGD']=robustnesslAPGD
+            performance['Group-based Robustness, assessed by attacks with MDMAX loss']=robustnesslAPGDSt_max
+            performance['Group-based Robustness, assessed by attacks with MDMUL loss']=robustnesslAPGDSt_group
+            performance['Group-based Robustness, assessed by average guess attacks']=robustnesslAPGDSt_average
+            performance['Group-based Robustness, assessed by best guess attacks']=robustnesslAPGDSt_best
+            
             
             pickle.dump(performance,f)
     
 
-print (y_test.shape,y_val.shape)
-print (np.sum(y_test==8))
 
 
