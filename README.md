@@ -1,5 +1,5 @@
 # Group-based Robustness
-This is the official code repository for the NDSS'24 paper: "Group-based Robustness: A General Framework for Customized Robustness in the Real World" (https://arxiv.org/pdf/2306.16614.pdf).
+This is the official code repository for the NDSS'24 paper: "Group-based Robustness: A General Framework for Customized Robustness in the Real World" (https://arxiv.org/pdf/2306.16614.pdf, https://www.ndss-symposium.org/wp-content/uploads/2024-84-paper.pdf).
 
 We propose the following to better evaluate the threat of evasion attacks in realistic attack scenarios.
 1. A new metric, group-based robustness, that empirically evaluates the threat more accurately.
